@@ -32,3 +32,9 @@ database port: 5432
 Authentication tokens are sent within the HTTP header.
 
 `Authorization   Bearer <token>`
+
+
+
+# API Endpoints
+
+API Endpoints are mentioned in REQUIREMENTS.md
