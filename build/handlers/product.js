@@ -37,11 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var product_1 = require("../models/product");
+var verify_1 = require("./verify");
 var productRoutes = function (app) {
     app.get('/products', index);
     app.get('/products/:id', show);
-    app.delete('/products', deleteProduct);
-    app.post('/products', createProduct);
+    app.delete('/products/:id', verify_1.verifyUser, deleteProduct);
+    app.post('/products/create', verify_1.verifyUser, createProduct);
+    app.put('/products/:id', verify_1.verifyUser, updateProduct);
 };
 var store = new product_1.ProductStore();
 var index = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -71,21 +73,26 @@ var show = function (_req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 var deleteProduct = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var productId, product;
+    var productId;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                productId = parseInt(_req.params.id);
+                productId = _req.params.id;
+                if (!productId) {
+                    res.status(400);
+                    res.send('ID is missed');
+                    return [2 /*return*/, false];
+                }
                 return [4 /*yield*/, store.deleteProduct(productId)];
             case 1:
-                product = _a.sent();
-                res.json(product);
+                _a.sent();
+                res.send("Product id: ".concat(productId, " was deleted successfully."));
                 return [2 /*return*/];
         }
     });
 }); };
 var createProduct = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var product, productCreated;
+    var product;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -94,11 +101,42 @@ var createProduct = function (_req, res) { return __awaiter(void 0, void 0, void
                     price: _req.body.price,
                     category: _req.body.category,
                 };
+                if (!product.name || !product.price || !product.category) {
+                    res.status(400);
+                    res.send('Some information are missed');
+                    return [2 /*return*/, false];
+                }
                 return [4 /*yield*/, store.addProduct(product)];
             case 1:
-                productCreated = _a.sent();
-                res.json(productCreated);
+                _a.sent();
+                res.json({ product: product });
                 return [2 /*return*/];
+        }
+    });
+}); };
+var updateProduct = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id, name, price, product, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                id = _req.params.id;
+                name = _req.body.name;
+                price = _req.body.price;
+                if (!name || !price || !id) {
+                    res.status(400);
+                    res.send('Some parameters are required ');
+                    return [2 /*return*/, false];
+                }
+                return [4 /*yield*/, store.update(id, name, price)];
+            case 1:
+                product = _a.sent();
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                res.status(400).json(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

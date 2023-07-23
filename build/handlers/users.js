@@ -39,9 +39,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var user_1 = require("../models/user");
 var dotenv_1 = __importDefault(require("dotenv"));
+var verify_1 = require("./verify");
 dotenv_1.default.config();
 var _a = process.env, POSTGRES_HOST = _a.POSTGRES_HOST, POSTGRES_DB = _a.POSTGRES_DB, POSTGRES_USER = _a.POSTGRES_USER, POSTGRES_PASSWORD = _a.POSTGRES_PASSWORD, TOKEN_SECRET = _a.TOKEN_SECRET;
 var store = new user_1.UserStore();
@@ -70,54 +70,62 @@ var show = function (_req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, newUser, token, err_1;
+    var firstname, lastname, username, password, user, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user = {
-                    username: req.body.username,
-                    password: req.body.password,
-                };
-                _a.label = 1;
+                _a.trys.push([0, 2, , 3]);
+                firstname = req.body.firstname;
+                lastname = req.body.lastname;
+                username = req.body.username;
+                password = req.body.password;
+                if (!firstname || !lastname || !username || !password) {
+                    res.status(400);
+                    res.send('Some required parameters are missing! eg. :firstName, :lastName, :userName, :password');
+                    return [2 /*return*/, false];
+                }
+                return [4 /*yield*/, store.create({
+                        firstname: firstname,
+                        lastname: lastname,
+                        username: username,
+                        password: password,
+                    })];
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, store.create(user)];
+                user = _a.sent();
+                res.json((0, verify_1.getToken)(user));
+                return [3 /*break*/, 3];
             case 2:
-                newUser = _a.sent();
-                token = jsonwebtoken_1.default.sign({ user: newUser }, process.env.TOKEN_SECRET);
-                res.json(token);
-                return [3 /*break*/, 4];
-            case 3:
                 err_1 = _a.sent();
-                res.status(400);
-                res.json("".concat(err_1, " ").concat(user));
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                console.log(err_1);
+                res.status(400).json(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
-var authenticate = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, u, err_2;
+var authenticate = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var username, password, user, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user = {
-                    username: _req.body.username,
-                    password: _req.body.password,
-                };
+                username = req.body.username;
+                password = req.body.password;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, store.authenticate(user.username, user.password)];
+                if (!username || !password) {
+                    res.status(400);
+                    res.send('username or password is wrong');
+                    return [2 /*return*/, false];
+                }
+                return [4 /*yield*/, store.authenticate(username, password)];
             case 2:
-                u = _a.sent();
-                if (u == null) {
-                    res.send('Invalid username or password');
+                user = _a.sent();
+                if (!user) {
+                    return [2 /*return*/, res.status(401).send("Wrong password ".concat(username, "."))];
                 }
-                else {
-                    res.send('Authenticated');
-                }
-                return [2 /*return*/];
+                res.json((0, verify_1.getToken)(user));
+                return [3 /*break*/, 4];
             case 3:
                 err_2 = _a.sent();
                 res.status(401);
@@ -128,59 +136,65 @@ var authenticate = function (_req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 var destroy = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var deleted;
+    var id, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, store.delete(_req.body.id)];
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                id = _req.params.id;
+                if (id == null) {
+                    res.status(400).send('Missing id as parameter.');
+                    return [2 /*return*/, false];
+                }
+                return [4 /*yield*/, store.delete(id)];
             case 1:
-                deleted = _a.sent();
-                res.json(deleted);
-                return [2 /*return*/];
+                _a.sent();
+                res.send("User id: ".concat(id, " , has been deleted successfully "));
+                return [3 /*break*/, 3];
+            case 2:
+                err_3 = _a.sent();
+                res.status(400).json(err_3);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 var update = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, authorizationHeader, token, decoded, updated, err_3;
+    var id, firstname, lastname, user, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user = {
-                    id: req.params.id,
-                    username: req.body.username,
-                    password: req.body.password,
-                };
-                _a.label = 1;
+                _a.trys.push([0, 2, , 3]);
+                id = req.params.id;
+                firstname = req.body.firstname;
+                lastname = req.body.lastname;
+                if (!firstname || !lastname || !id) {
+                    res.status(400);
+                    res.send('Some required parameters are missing! eg. :firstName, :lastName, :id');
+                    return [2 /*return*/, false];
+                }
+                return [4 /*yield*/, store.update(id, {
+                        firstname: firstname,
+                        lastname: lastname,
+                    })];
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                authorizationHeader = req.headers.authorization;
-                token = authorizationHeader === null || authorizationHeader === void 0 ? void 0 : authorizationHeader.split(' ')[1];
-                if (!token) {
-                    throw new Error('Authorization token is missing!');
-                }
-                decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
-                if (decoded.id !== user.id) {
-                    throw new Error('User id does not match!');
-                }
-                return [4 /*yield*/, store.create(user)];
+                user = _a.sent();
+                res.json(user);
+                return [3 /*break*/, 3];
             case 2:
-                updated = _a.sent();
-                res.json({ message: 'User updated successfully' });
-                return [3 /*break*/, 4];
-            case 3:
-                err_3 = _a.sent();
-                res.status(401);
-                res.json(err_3);
-                return [2 /*return*/];
-            case 4: return [2 /*return*/];
+                err_4 = _a.sent();
+                res.status(400).json(err_4);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 var userRoutes = function (app) {
     app.get('/users', index);
     app.get('/users/:id', show);
-    app.post('/users', create);
-    app.delete('/users', destroy);
+    app.post('/users/create', create);
+    app.delete('/users/:id', verify_1.verifyUser, destroy);
     app.post('/users/authenticate', authenticate);
-    app.put('/users/:id', update);
+    app.put('/users/:id', verify_1.verifyUser, update);
 };
 exports.default = userRoutes;

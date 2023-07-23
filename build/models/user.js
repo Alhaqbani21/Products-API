@@ -95,35 +95,42 @@ var UserStore = /** @class */ (function () {
             });
         });
     };
-    UserStore.prototype.create = function (u) {
+    UserStore.prototype.create = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, hash, result, user, err_3;
+            var firstname, lastname, username, password, sql, hash, connection, rows, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.default.connect()];
+                        firstname = user.firstname, lastname = user.lastname, username = user.username, password = user.password;
+                        _a.label = 1;
                     case 1:
-                        conn = _a.sent();
-                        sql = 'INSERT INTO users (username, password_digest) VALUES($1, $2) RETURNING *';
-                        hash = bcrypt_1.default.hashSync(u.password + pepper, parseInt(saltRounds));
-                        return [4 /*yield*/, conn.query(sql, [u.username, hash])];
+                        _a.trys.push([1, 4, , 5]);
+                        sql = 'INSERT INTO users (firstname, lastname, username, password_digest) VALUES($1, $2, $3, $4) RETURNING *';
+                        hash = bcrypt_1.default.hashSync(password + process.env.BCRYPT_PASSWORD, parseInt(process.env.SALT_ROUNDS, 10));
+                        return [4 /*yield*/, database_1.default.connect()];
                     case 2:
-                        result = _a.sent();
-                        user = result.rows[0];
-                        conn.release();
-                        return [2 /*return*/, user];
+                        connection = _a.sent();
+                        return [4 /*yield*/, connection.query(sql, [
+                                firstname,
+                                lastname,
+                                username,
+                                hash,
+                            ])];
                     case 3:
+                        rows = (_a.sent()).rows;
+                        connection.release();
+                        return [2 /*return*/, rows[0]];
+                    case 4:
                         err_3 = _a.sent();
-                        throw new Error("unable create user (".concat(u.username, "): ").concat(err_3));
-                    case 4: return [2 /*return*/];
+                        throw new Error("Could not add new user ".concat(firstname, " ").concat(lastname, ". ").concat(err_3));
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
     UserStore.prototype.delete = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, product, err_4;
+            var conn, sql, err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -134,13 +141,40 @@ var UserStore = /** @class */ (function () {
                         sql = 'DELETE FROM users WHERE id=($1)';
                         return [4 /*yield*/, conn.query(sql, [id])];
                     case 2:
-                        result = _a.sent();
-                        product = result.rows[0];
+                        _a.sent();
                         conn.release();
-                        return [2 /*return*/, product];
+                        return [2 /*return*/, true];
                     case 3:
                         err_4 = _a.sent();
                         throw new Error("unable delete user (".concat(id, "): ").concat(err_4));
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserStore.prototype.update = function (id, newUserData) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sql, conn, rows, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        sql = 'UPDATE users SET firstname = $1, lastname = $2 WHERE id = $3 RETURNING *';
+                        return [4 /*yield*/, database_1.default.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        return [4 /*yield*/, conn.query(sql, [
+                                newUserData.firstname,
+                                newUserData.lastname,
+                                id,
+                            ])];
+                    case 2:
+                        rows = (_a.sent()).rows;
+                        conn.release();
+                        return [2 /*return*/, rows[0]];
+                    case 3:
+                        err_5 = _a.sent();
+                        throw new Error("Not able to update user ".concat(newUserData.firstname, ". ").concat(err_5));
                     case 4: return [2 /*return*/];
                 }
             });

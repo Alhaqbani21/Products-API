@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, UserStore } from '../models/user';
 import dotenv from 'dotenv';
+import { verifyUser, getToken } from './verify';
 
 dotenv.config();
 
@@ -26,37 +27,47 @@ const show = async (_req: Request, res: Response) => {
 };
 
 const create = async (req: Request, res: Response) => {
-  const user: User = {
-    username: req.body.username,
-    password: req.body.password,
-  };
-
   try {
-    const newUser = await store.create(user);
-    const token = jwt.sign(
-      { user: newUser },
-      process.env.TOKEN_SECRET as string
-    );
-    res.json(token);
+    const firstname = req.body.firstname as unknown as string;
+    const lastname = req.body.lastname as unknown as string;
+    const username = req.body.username as unknown as string;
+    const password = req.body.password as unknown as string;
+
+    if (!firstname || !lastname || !username || !password) {
+      res.status(400);
+      res.send(
+        'Some required parameters are missing! eg. :firstName, :lastName, :userName, :password'
+      );
+      return false;
+    }
+    const user: User = await store.create({
+      firstname,
+      lastname,
+      username,
+      password,
+    });
+
+    res.json(getToken(user));
   } catch (err) {
-    res.status(400);
-    res.json(`${err} ${user}`);
+    console.log(err);
+    res.status(400).json(err);
   }
 };
 
-const authenticate = async (_req: Request, res: Response) => {
-  const user: User = {
-    username: _req.body.username,
-    password: _req.body.password,
-  };
+const authenticate = async (req: Request, res: Response) => {
+  const username = req.body.username as unknown as string;
+  const password = req.body.password as unknown as string;
   try {
-    const u = await store.authenticate(user.username, user.password);
-    if (u == null) {
-      res.send('Invalid username or password');
-    } else {
-      res.send('Authenticated');
+    if (!username || !password) {
+      res.status(400);
+      res.send('username or password is wrong');
+      return false;
     }
-    return;
+    const user: User | null = await store.authenticate(username, password);
+    if (!user) {
+      return res.status(401).send(`Wrong password ${username}.`);
+    }
+    res.json(getToken(user));
   } catch (err) {
     res.status(401);
     res.json(`${err} `);
@@ -65,46 +76,47 @@ const authenticate = async (_req: Request, res: Response) => {
 };
 
 const destroy = async (_req: Request, res: Response) => {
-  const deleted = await store.delete(_req.body.id as string);
-  res.json(deleted);
+  try {
+    const id = _req.params.id as unknown as number;
+    if (id == null) {
+      res.status(400).send('Missing id as parameter.');
+      return false;
+    }
+    await store.delete(id);
+    res.send(`User id: ${id} , has been deleted successfully `);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
 const update = async (req: Request, res: Response) => {
-  const user: User = {
-    id: req.params.id,
-    username: req.body.username,
-    password: req.body.password,
-  };
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader?.split(' ')[1];
-    if (!token) {
-      throw new Error('Authorization token is missing!');
+    const id = req.params.id as unknown as number;
+    const firstname = req.body.firstname as unknown as string;
+    const lastname = req.body.lastname as unknown as string;
+    if (!firstname || !lastname || !id) {
+      res.status(400);
+      res.send(
+        'Some required parameters are missing! eg. :firstName, :lastName, :id'
+      );
+      return false;
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.TOKEN_SECRET as string
-    ) as unknown as {
-      id: string;
-    };
-    if (decoded.id !== user.id) {
-      throw new Error('User id does not match!');
-    }
-    const updated = await store.create(user);
-    res.json({ message: 'User updated successfully' });
+    const user: User = await store.update(id, {
+      firstname,
+      lastname,
+    });
+    res.json(user);
   } catch (err) {
-    res.status(401);
-    res.json(err);
-    return;
+    res.status(400).json(err);
   }
 };
 
 const userRoutes = (app: express.Application) => {
   app.get('/users', index);
   app.get('/users/:id', show);
-  app.post('/users', create);
-  app.delete('/users', destroy);
+  app.post('/users/create', create);
+  app.delete('/users/:id', verifyUser, destroy);
   app.post('/users/authenticate', authenticate);
-  app.put('/users/:id', update);
+  app.put('/users/:id', verifyUser, update);
 };
 export default userRoutes;

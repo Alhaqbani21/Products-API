@@ -125,6 +125,30 @@ var ProductStore = /** @class */ (function () {
             });
         });
     };
+    ProductStore.prototype.update = function (id, newName, price) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sql, conn, rows, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        sql = 'UPDATE products SET name = $1, price = $2 WHERE id = $3 RETURNING *';
+                        return [4 /*yield*/, database_1.default.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        return [4 /*yield*/, conn.query(sql, [newName, price, id])];
+                    case 2:
+                        rows = (_a.sent()).rows;
+                        conn.release();
+                        return [2 /*return*/, rows[0]];
+                    case 3:
+                        err_5 = _a.sent();
+                        throw new Error("Could not update product ".concat(newName, ". ").concat(err_5));
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return ProductStore;
 }());
 exports.ProductStore = ProductStore;
