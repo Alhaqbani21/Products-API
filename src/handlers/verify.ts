@@ -7,21 +7,21 @@ dotenv.config();
 const SECRET = process.env.TOKEN_SECRET as Secret;
 
 export const getToken = (user: User) => {
-  return jwt.sign({ user }, SECRET);
+    return jwt.sign({ user }, SECRET);
 };
 
 export const verifyUser = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.headers.authorization) {
-    res.status(401).json({ error: 'Access denied, invalid token' });
-    return false;
-  }
-  try {
-    const token = req.headers.authorization.split(' ')[1];
-    jwt.verify(token, SECRET);
-    next();
-  } catch (error) {
-    res.status(401);
-    res.json('Access denied, invalid token');
-    return;
-  }
+    if (!req.headers.authorization) {
+        res.status(401).json({ error: 'Access denied, invalid token' });
+        return false;
+    }
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, SECRET);
+        next();
+    } catch (error) {
+        res.status(401);
+        res.json('Access denied, invalid token');
+        return;
+    }
 };
