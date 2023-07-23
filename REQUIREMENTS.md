@@ -14,6 +14,8 @@ These are the notes from a meeting with the frontend developer that describe wha
 - [OPTIONAL] Top 5 most popular products `'/five-most-expensive' [GET]`
 - [OPTIONAL] Products by category (args: product category)
 - [ADDED] Delete: `'products/:id  [DELETE]`
+- [ADDED] products_in_orders: `'/products_in_orders' [GET]`
+- [ADDED] users-with-orders: `'/users-with-orders' [GET]`
 
 #### Users
 
