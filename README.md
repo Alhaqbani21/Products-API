@@ -12,15 +12,15 @@ Develop an API based on stakeholder requirements. Design the database schema, ta
 
 # .env Variables
 
-POSTGRES_HOST=127.0.0.1
-POSTGRES_DB=store_front
-POSTGRES_TEST_DB=store_front_test
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-ENV=dev
-SALT_ROUNDS=10
-BCRYPT_PASSWORD=exodus-fencing-huskiness
-TOKEN_SECRET=diffused
+- POSTGRES_HOST=127.0.0.1
+- POSTGRES_DB=store_front
+- POSTGRES_TEST_DB=store_front_test
+- POSTGRES_USER=
+- POSTGRES_PASSWORD=
+- ENV=dev
+- SALT_ROUNDS=10
+- BCRYPT_PASSWORD=exodus-fencing-huskiness
+- TOKEN_SECRET=diffused
 
 # ports
 
