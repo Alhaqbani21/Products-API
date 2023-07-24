@@ -1,12 +1,13 @@
 import express, { Request, Response, response } from 'express';
 
 import { Order, OrderStore, OrderProduct } from '../models/order';
+import { verifyUser } from './verify';
 
 const orderRoutes = (app: express.Application) => {
     app.get('/orders', index);
-    app.get('/orders/:id', show);
-    app.post('/orders', create);
-    app.post('/orders/:id/products', addProductToOrder);
+    app.get('/orders/:id', verifyUser, show);
+    app.post('/orders/create', verifyUser, create);
+    app.delete('/orders/:id', verifyUser, destroyOrder);
 };
 
 const store = new OrderStore();
@@ -20,39 +21,45 @@ const show = async (_req: Request, res: Response) => {
     const order = await store.show(_req.params.id);
     res.json(order);
 };
-
-const create = async (_req: Request, res: Response) => {
-    const order: Order = {
-        userId: _req.body.userId,
-        status: 'active'
-    };
-
+const destroyOrder = async (req: Request, res: Response) => {
     try {
-        const newOrder = await store.create(order);
-        res.json(newOrder);
+        const id = req.params.id as unknown as number;
+        if (!id) {
+            res.status(400);
+            res.send('id is not mentioned ');
+            return false;
+        }
+        await store.destroyOrder(id);
+        res.send(`Order has been deleted successfully id: ${id}`);
     } catch (err) {
         res.status(400);
-        res.json(err);
+        res.json(`Error: ${err}`);
     }
 };
 
-export async function addProductToOrder(req: Request, res: Response) {
-    const { id } = req.params; // Extract order ID from the request parameters
-
-    const orderProduct: OrderProduct = {
-        order_id: parseInt(id),
-        product_id: req.body.product_id,
-        quantity: req.body.quantity
-    };
+const create = async (req: Request, res: Response) => {
     try {
-        // Call the addProductToOrder function to add the product to the order
-        const order = await store.addProductToOrder(orderProduct);
+        const products = req.body.products as unknown as OrderProduct[];
+        const status = req.body.status as unknown as string;
+        const user_id = req.body.user_id as unknown as number;
 
-        // Respond with the updated order
-        return res.json(order);
-    } catch (error) {
-        return res.status(500).json({ error });
+        if (!products || !status || !user_id) {
+            res.status(400);
+            res.send('products, status and user_id are missing ');
+            return false;
+        }
+
+        const order: Order = await store.create({
+            products,
+            user_id,
+            status
+        });
+
+        res.json(order);
+    } catch (e) {
+        res.status(400);
+        res.json(e);
     }
-}
+};
 
 export default orderRoutes;

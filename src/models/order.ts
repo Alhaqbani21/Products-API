@@ -1,19 +1,25 @@
+// @ts-ignore
 import Client from '../database';
 
-export type Order = {
-    userId: string;
-    status: string;
-};
-export type OrderProduct = {
-    id?: number;
-    order_id: number;
+export interface OrderProduct {
     product_id: number;
     quantity: number;
-};
+}
+
+export interface BaseOrder {
+    products: OrderProduct[];
+    user_id: number;
+    status: string;
+}
+
+export interface Order extends BaseOrder {
+    id?: number;
+}
 
 export class OrderStore {
     async index(): Promise<Order[]> {
         try {
+            // @ts-ignore
             const conn = await Client.connect();
             const sql = 'SELECT * FROM orders';
             const result = await conn.query(sql);
@@ -26,6 +32,7 @@ export class OrderStore {
 
     async show(id: string): Promise<Order> {
         try {
+            // @ts-ignore
             const conn = await Client.connect();
             const sql = 'SELECT * FROM orders WHERE id =$1';
             const result = await conn.query(sql, [id]);
@@ -37,50 +44,60 @@ export class OrderStore {
         }
     }
 
-    async create(o: Order): Promise<Order> {
-        try {
-            const conn = await Client.connect();
-            const sql =
-                'INSERT INTO orders (status, user_id) VALUES($1,$2) RETURNING *';
+    async create(order: BaseOrder): Promise<Order> {
+        const { products, user_id, status } = order;
 
-            const result = await conn.query(sql, [o.status, o.userId]);
-            console.log(o.status, o.userId, result.rows);
+        try {
+            const sql =
+                'INSERT INTO orders (status, user_id) VALUES ($1, $2) RETURNING *';
+            // @ts-ignore
+            const conn = await Client.connect();
+            const { rows } = await conn.query(sql, [status, user_id]);
+            const newOrder = rows[0]; // Use a different variable name here to avoid conflicts
+
+            const orderProductsSql =
+                'INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING product_id, quantity';
+            const orderProducts = [];
+
+            for (const product of products) {
+                const { product_id, quantity } = product;
+                const { rows } = await conn.query(orderProductsSql, [
+                    newOrder.id, // Use the newOrder variable here
+                    product_id,
+                    quantity
+                ]);
+                orderProducts.push(rows[0]);
+            }
+
             conn.release();
-            return result.rows[0];
+
+            return {
+                ...newOrder, // Use the newOrder variable here
+                products: orderProducts
+            };
         } catch (err) {
-            throw new Error(`Could not create order: Error: ${err}`);
+            throw new Error(
+                `Could not add new order for user ${user_id}. ${err}`
+            );
         }
     }
 
-    async addProductToOrder(orderProduct: OrderProduct): Promise<OrderProduct> {
-        const conn = await Client.connect();
-        const { order_id, product_id, quantity } = orderProduct;
+    async destroyOrder(id: number): Promise<Order> {
         try {
-            // Step 1: Check if the order exists and has 'active' status
-            const getOrderQuery = 'SELECT * FROM orders WHERE id = $1';
-            const getOrderResult = await conn.query(getOrderQuery, [
-                orderProduct.order_id
-            ]);
-            const order = getOrderResult.rows[0];
-
-            if (!order || order.status !== 'active') {
-                throw new Error(
-                    `Could not add product ${orderProduct.product_id} to order ${orderProduct.order_id}`
-                );
-            }
-
-            const sql =
-                'INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *';
-            const values = [order_id, product_id, quantity];
-            const result = await conn.query(sql, values);
-
-            return result.rows[0];
+            // @ts-ignore
+            const conn = await Client.connect();
+            const orderProductsQuery =
+                'DELETE FROM order_products WHERE order_id=($1)';
+            await conn.query(orderProductsQuery, [id]);
+            const ordersQuery = 'DELETE FROM orders WHERE id=($1)';
+            const result = await conn.query(ordersQuery, [id]);
+            const orderResult = result.rows[0];
+            conn.release();
+            return orderResult;
         } catch (err) {
             throw new Error(
-                `Could not add product ${orderProduct.product_id} to order ${orderProduct.order_id}: ${err}`
+                `not able to delete order with id: ${id} , Error: ${err}`
             );
-        } finally {
-            conn.release();
         }
     }
 }

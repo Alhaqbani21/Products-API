@@ -1,3 +1,4 @@
+// @ts-ignore
 import Client from '../database';
 import bcrypt from 'bcrypt';
 
@@ -61,15 +62,16 @@ export class UserStore {
                 password + process.env.BCRYPT_PASSWORD,
                 parseInt(process.env.SALT_ROUNDS as string, 10)
             );
-            const connection = await Client.connect();
-            const { rows } = await connection.query(sql, [
+            //@ts-ignore
+            const conn = await Client.connect();
+            const { rows } = await conn.query(sql, [
                 firstname,
                 lastname,
                 username,
                 hash
             ]);
 
-            connection.release();
+            conn.release();
 
             return rows[0];
         } catch (err) {
@@ -81,6 +83,7 @@ export class UserStore {
 
     async delete(id: number): Promise<boolean> {
         try {
+            //@ts-ignore
             const conn = await Client.connect();
             const sql = 'DELETE FROM users WHERE id=($1)';
 
@@ -96,6 +99,7 @@ export class UserStore {
         try {
             const sql =
                 'UPDATE users SET firstname = $1, lastname = $2 WHERE id = $3 RETURNING *';
+            //@ts-ignore
             const conn = await Client.connect();
             const { rows } = await conn.query(sql, [
                 newUserData.firstname,
@@ -115,6 +119,7 @@ export class UserStore {
         username: string,
         password: string
     ): Promise<User | null> {
+        //@ts-ignore
         const conn = await Client.connect();
         const sql = 'SELECT password_digest FROM users WHERE username=($1)';
 

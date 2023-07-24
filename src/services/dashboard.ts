@@ -1,3 +1,4 @@
+//@ts-ignore
 import Client from '../database';
 
 export class DashboardQueries {
@@ -6,6 +7,7 @@ export class DashboardQueries {
         { name: string; price: number; order_id: string; quantity: number }[]
     > {
         try {
+            //@ts-ignore
             const conn = await Client.connect();
             const sql = `SELECT products.name, products.price, order_products.order_id 
       FROM products 
@@ -25,6 +27,7 @@ export class DashboardQueries {
         { firstName: String; lastname: string }[]
     > {
         try {
+            //@ts-ignore
             const conn = await Client.connect();
             const sql =
                 'SELECT username FROM users INNER JOIN orders ON users.id = orders.user_id';
