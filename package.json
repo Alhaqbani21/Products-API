@@ -3,11 +3,11 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "build": "cross-env ENV=dev npx tsc",
+        "build": "set ENV=dev && npx tsc",
         "start": "tsc && node ./dist/server.js",
         "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess node ./dist/server.js",
         "migrate": "db-migrate --env test up && db-migrate up",
-        "test": "db-migrate up --env test && npm run build && ENV=test jasmine && npm run reset-test-db",
+        "test": "db-migrate up --env test && npm run build && set ENV=test npm run jasmine && npm run reset-test-db",
         "tsc": "tsc",
         "reset-dev-db": "db-migrate reset -e dev",
         "reset-test-db": "db-migrate reset -e test",
