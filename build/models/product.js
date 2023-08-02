@@ -19,9 +19,11 @@ class ProductStore {
     index() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                //@ts-ignore
+                const conn = yield database_1.default.connect();
                 const sql = 'SELECT * FROM products';
-                // @ts-ignore
-                const result = yield database_1.default.query(sql);
+                const result = yield conn.query(sql);
+                conn.release();
                 return result.rows;
             }
             catch (err) {

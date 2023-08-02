@@ -11,9 +11,12 @@ export type Product = {
 export class ProductStore {
     async index(): Promise<Product[]> {
         try {
+            //@ts-ignore
+            const conn = await Client.connect();
             const sql = 'SELECT * FROM products';
-            // @ts-ignore
-            const result = await Client.query(sql);
+
+            const result = await conn.query(sql);
+            conn.release();
             return result.rows;
         } catch (err) {
             throw new Error(`Unable to get products: ${err}`);

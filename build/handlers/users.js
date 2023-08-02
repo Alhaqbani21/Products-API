@@ -18,13 +18,28 @@ const verify_1 = require("./verify");
 dotenv_1.default.config();
 const { POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, TOKEN_SECRET } = process.env;
 const store = new user_1.UserStore();
-const index = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield store.index();
-    res.json(users);
+const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield store.index();
+        res.json(users);
+    }
+    catch (err) {
+        res.status(400).json(err);
+    }
 });
 const show = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield store.show(_req.params.id);
-    res.json(user);
+    try {
+        const id = _req.params.id;
+        if (!id) {
+            return res.status(400).send('ID is required ');
+        }
+        const user = yield store.show(id);
+        res.json(user);
+    }
+    catch (err) {
+        res.status(400);
+        res.json(err);
+    }
 });
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

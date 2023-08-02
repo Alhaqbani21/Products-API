@@ -21,9 +21,10 @@ export interface User extends BaseAuthUser {
 
 export class UserStore {
     async index(): Promise<User[]> {
+        //@ts-ignore
+        const conn = await Client.connect();
+
         try {
-            //@ts-ignore
-            const conn = await Client.connect();
             const sql = 'SELECT * FROM users';
 
             const result = await conn.query(sql);
@@ -36,7 +37,7 @@ export class UserStore {
         }
     }
 
-    async show(id: string): Promise<User> {
+    async show(id: number): Promise<User> {
         try {
             const sql = 'SELECT * FROM users WHERE id=($1)';
             //@ts-ignoreX$
@@ -56,14 +57,15 @@ export class UserStore {
         const { firstname, lastname, username, password } = user;
 
         try {
+            //@ts-ignore
+            const conn = await Client.connect();
             const sql =
                 'INSERT INTO users (firstname, lastname, username, password_digest) VALUES($1, $2, $3, $4) RETURNING *';
             const hash = bcrypt.hashSync(
                 password + process.env.BCRYPT_PASSWORD,
                 parseInt(process.env.SALT_ROUNDS as string, 10)
             );
-            //@ts-ignore
-            const conn = await Client.connect();
+
             const { rows } = await conn.query(sql, [
                 firstname,
                 lastname,

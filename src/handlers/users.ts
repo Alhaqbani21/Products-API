@@ -16,14 +16,27 @@ const {
 
 const store = new UserStore();
 
-const index = async (_req: Request, res: Response) => {
-    const users = await store.index();
-    res.json(users);
+const index = async (req: Request, res: Response) => {
+    try {
+        const users: User[] = await store.index();
+        res.json(users);
+    } catch (err) {
+        res.status(400).json(err);
+    }
 };
 
 const show = async (_req: Request, res: Response) => {
-    const user = await store.show(_req.params.id);
-    res.json(user);
+    try {
+        const id = _req.params.id as unknown as number;
+        if (!id) {
+            return res.status(400).send('ID is required ');
+        }
+        const user = await store.show(id);
+        res.json(user);
+    } catch (err) {
+        res.status(400);
+        res.json(err);
+    }
 };
 
 const create = async (req: Request, res: Response) => {

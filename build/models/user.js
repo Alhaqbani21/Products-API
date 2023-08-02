@@ -21,9 +21,9 @@ const pepper = process.env.BCRYPT_PASSWORD;
 class UserStore {
     index() {
         return __awaiter(this, void 0, void 0, function* () {
+            //@ts-ignore
+            const conn = yield database_1.default.connect();
             try {
-                //@ts-ignore
-                const conn = yield database_1.default.connect();
                 const sql = 'SELECT * FROM users';
                 const result = yield conn.query(sql);
                 conn.release();
@@ -53,10 +53,10 @@ class UserStore {
         return __awaiter(this, void 0, void 0, function* () {
             const { firstname, lastname, username, password } = user;
             try {
-                const sql = 'INSERT INTO users (firstname, lastname, username, password_digest) VALUES($1, $2, $3, $4) RETURNING *';
-                const hash = bcrypt_1.default.hashSync(password + process.env.BCRYPT_PASSWORD, parseInt(process.env.SALT_ROUNDS, 10));
                 //@ts-ignore
                 const conn = yield database_1.default.connect();
+                const sql = 'INSERT INTO users (firstname, lastname, username, password_digest) VALUES($1, $2, $3, $4) RETURNING *';
+                const hash = bcrypt_1.default.hashSync(password + process.env.BCRYPT_PASSWORD, parseInt(process.env.SALT_ROUNDS, 10));
                 const { rows } = yield conn.query(sql, [
                     firstname,
                     lastname,
