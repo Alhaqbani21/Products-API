@@ -16,13 +16,13 @@ const supertest_1 = __importDefault(require("supertest"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const server_1 = __importDefault(require("../../server"));
 const request = (0, supertest_1.default)(server_1.default);
-const SECRET = process.env.TOKEN_KEY;
+const SECRET = process.env.TOKEN_SECRET;
 describe('User Handler', () => {
     const userData = {
-        username: 'ChrisAnne',
-        firstname: 'Chris',
-        lastname: 'Anne',
-        password: 'password123'
+        username: 'X3zZ',
+        firstname: 'Abdulaziz',
+        lastname: 'Alhaqbani',
+        password: '123'
     };
     let token, userId = 1;
     it('should gets the create endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,7 +51,7 @@ describe('User Handler', () => {
         done();
     }));
     it('should get the update endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
-        const newUserData = Object.assign(Object.assign({}, userData), { firstname: 'Chris', lastname: 'Anne' });
+        const newUserData = Object.assign(Object.assign({}, userData), { firstname: 'Ahmed', lastname: 'Saad' });
         const res = yield request
             .put(`/users/${userId}`)
             .send(newUserData)

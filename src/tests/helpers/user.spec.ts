@@ -5,14 +5,14 @@ import { BaseAuthUser } from '../../models/user';
 import app from '../../server';
 
 const request = supertest(app);
-const SECRET = process.env.TOKEN_KEY as Secret;
+const SECRET = process.env.TOKEN_SECRET as Secret;
 
 describe('User Handler', () => {
     const userData: BaseAuthUser = {
-        username: 'ChrisAnne',
-        firstname: 'Chris',
-        lastname: 'Anne',
-        password: 'password123'
+        username: 'X3zZ',
+        firstname: 'Abdulaziz',
+        lastname: 'Alhaqbani',
+        password: '123'
     };
 
     let token: string,
@@ -54,8 +54,8 @@ describe('User Handler', () => {
     it('should get the update endpoint', async (done) => {
         const newUserData: BaseAuthUser = {
             ...userData,
-            firstname: 'Chris',
-            lastname: 'Anne'
+            firstname: 'Ahmed',
+            lastname: 'Saad'
         };
 
         const res = await request

@@ -4,10 +4,10 @@
     "main": "index.js",
     "scripts": {
         "build": "set ENV=dev && npx tsc",
-        "start": "cross-env ENV=dev tsc && node ./build/server.js",
+        "start": "tsc && node ./build/server.js",
         "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./build --onSuccess node ./build/server.js",
-        "migrate": "db-migrate --env test up && db-migrate up",
-        "test": "db-migrate up --env test && npm run build && set ENV=test && npm run jasmine && npm run reset-test-db",
+        "migrate": "cross-env ENV=test tsc && db-migrate --env test up && db-migrate up",
+        "test": "db-migrate --env test up && npm run jasmine ",
         "tsc": "tsc",
         "reset-dev-db": "db-migrate reset -e dev",
         "reset-test-db": "db-migrate reset -e test",
@@ -48,7 +48,8 @@
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
         "jsonwebtoken": "^9.0.1",
-        "pg": "^8.11.1"
+        "pg": "^8.11.1",
+        "supertest": "^6.3.3"
     },
     "description": ""
 }
