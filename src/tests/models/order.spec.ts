@@ -53,23 +53,23 @@ describe('Order Model', () => {
         await productStore.deleteProduct(product_id);
     });
 
-    it('should have an index method', () => {
+    it('Get index method implemented', () => {
         expect(orderStore.index).toBeDefined();
     });
 
-    it('should have a show method', () => {
+    it('Get show method implemented', () => {
         expect(orderStore.show).toBeDefined();
     });
 
-    it('should have a add method', () => {
+    it('Get add method implemented', () => {
         expect(orderStore.create).toBeDefined();
     });
 
-    it('should have a delete method', () => {
+    it('Get delete method implemented', () => {
         expect(orderStore.destroyOrder).toBeDefined();
     });
 
-    it('should add an order', async () => {
+    it('order should be added ', async () => {
         const createdOrder: Order = await createOrder(order);
         expect(parseInt(createdOrder.user_id as unknown as string)).toEqual(
             user_id
@@ -85,7 +85,7 @@ describe('Order Model', () => {
         }
     });
 
-    it('should remove the order item', async () => {
+    it('order item should be removed ', async () => {
         const createdOrder: Order = await createOrder(order);
         if (createdOrder.id) {
             await deleteOrder(createdOrder.id);

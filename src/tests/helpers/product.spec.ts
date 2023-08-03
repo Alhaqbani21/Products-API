@@ -38,7 +38,7 @@ describe('Product Handler', () => {
             .set('Authorization', 'bearer ' + token);
     });
 
-    it('gets the create endpoint', async () => {
+    it('Checked create Endpoint', async () => {
         const res = await request
             .post('/products/create')
             .send(product)
@@ -47,17 +47,17 @@ describe('Product Handler', () => {
         expect(res.status).toBe(200);
     });
 
-    it('gets the index endpoint', async () => {
+    it('Checked index Endpoint', async () => {
         const res = await request.get('/products');
         expect(res.status).toBe(200);
     });
 
-    it('gets the read endpoint', async () => {
+    it('Checked show Endpoint', async () => {
         const res = await request.get(`/products/1`);
         expect(res.status).toBe(200);
     });
 
-    it('gets the update endpoint', async () => {
+    it('Checked update Endpoint', async () => {
         const newProductData: BaseProduct = {
             ...product,
             name: 'Blue Pants',
@@ -72,7 +72,7 @@ describe('Product Handler', () => {
         expect(res.status).toBe(200);
     });
 
-    it('gets the delete endpoint', async () => {
+    it('Checked delete Endpoint', async () => {
         const res = await request
             .delete(`/products/1`)
             .set('Authorization', 'bearer ' + token);

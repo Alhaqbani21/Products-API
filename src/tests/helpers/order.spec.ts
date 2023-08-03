@@ -44,7 +44,7 @@ describe('Order Handler', () => {
         );
     });
 
-    it('should create order endpoint', async () => {
+    it('Checked create order Endpoint', async () => {
         const res = await request
             .post('/orders/create')
             .set('Authorization', 'Bearer ' + token)
@@ -74,7 +74,7 @@ describe('Order Handler', () => {
         });
     });
 
-    it('gets the index endpoint', async () => {
+    it('Checked index Endpoint', async () => {
         const res = await request
             .get('/orders')
             .set('Authorization', 'bearer ' + token);
@@ -82,7 +82,7 @@ describe('Order Handler', () => {
         expect(res.status).toBe(200);
     });
 
-    it('should gets the read endpoint', async () => {
+    it('Checked show Endpoint', async () => {
         const res = await request
             .get(`/orders/1`)
             .set('Authorization', 'bearer ' + token);
@@ -90,7 +90,7 @@ describe('Order Handler', () => {
         expect(res.status).toBe(200);
     });
 
-    it('should gets the delete endpoint', async () => {
+    it('Checked delete Endpoint', async () => {
         const res = await request
             .delete(`/orders/2`)
             .set('Authorization', 'bearer ' + token);
