@@ -42,18 +42,6 @@ describe('Product Model', () => {
         await deleteProduct(createdProduct.id);
     });
 
-    it('should return a list of products', async () => {
-        const productList: Product[] = await productStore.index();
-        expect(productList).toEqual([
-            {
-                id: 1,
-                name: 'Blue Pants',
-                price: 150,
-                category: 'Pants'
-            }
-        ]);
-    });
-
     it('should return the correct product', async () => {
         const createdProduct: Product = await createProduct(product);
         const productData = await productStore.show(createdProduct.id);

@@ -42,13 +42,19 @@ export class ProductStore {
         const { name, price, category } = product;
         try {
             const sql =
-                'INSERT INTO products (name, price, category) VALUES ($1, $2, $3)';
+                'INSERT INTO products (name, price, category) VALUES ($1, $2, $3) RETURNING *'; // Add "RETURNING *" to retrieve the inserted product
             const values = [name, price, category];
-            // @ts-ignore
+            //@ts-ignore
             const conn = await Client.connect();
 
             const result = await conn.query(sql, values);
             conn.release();
+
+            // Make sure the insert operation was successful and that the product was returned
+            if (result.rows.length === 0) {
+                throw new Error('Product not created');
+            }
+
             return result.rows[0];
         } catch (err) {
             throw new Error(`Unable to add product: ${err}`);

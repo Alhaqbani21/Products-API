@@ -7,7 +7,7 @@
         "start": "tsc && node ./build/server.js",
         "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./build --onSuccess node ./build/server.js",
         "migrate": "cross-env ENV=test tsc && db-migrate --env test up && db-migrate up",
-        "test": "db-migrate --env test up && npm run jasmine ",
+        "test": "db-migrate reset -e test && npm run build && db-migrate --env test up && npm run jasmine ",
         "tsc": "tsc",
         "reset-dev-db": "db-migrate reset -e dev",
         "reset-test-db": "db-migrate reset -e test",

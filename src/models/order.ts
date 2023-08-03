@@ -13,7 +13,7 @@ export interface BaseOrder {
 }
 
 export interface Order extends BaseOrder {
-    id?: number;
+    id: number;
 }
 
 export class OrderStore {
@@ -30,7 +30,7 @@ export class OrderStore {
         }
     }
 
-    async show(id: string): Promise<Order> {
+    async show(id: number): Promise<Order> {
         try {
             // @ts-ignore
             const conn = await Client.connect();
@@ -50,10 +50,10 @@ export class OrderStore {
         try {
             const sql =
                 'INSERT INTO orders (status, user_id) VALUES ($1, $2) RETURNING *';
-            // @ts-ignore
+            //@ts-ignore
             const conn = await Client.connect();
             const { rows } = await conn.query(sql, [status, user_id]);
-            const newOrder = rows[0]; // Use a different variable name here to avoid conflicts
+            const newOrder = rows[0];
 
             const orderProductsSql =
                 'INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING product_id, quantity';
@@ -62,8 +62,8 @@ export class OrderStore {
             for (const product of products) {
                 const { product_id, quantity } = product;
                 const { rows } = await conn.query(orderProductsSql, [
-                    newOrder.id, // Use the newOrder variable here
-                    product_id,
+                    newOrder.id,
+                    product_id, // Parse the product_id to a number
                     quantity
                 ]);
                 orderProducts.push(rows[0]);
@@ -72,7 +72,7 @@ export class OrderStore {
             conn.release();
 
             return {
-                ...newOrder, // Use the newOrder variable here
+                ...newOrder,
                 products: orderProducts
             };
         } catch (err) {

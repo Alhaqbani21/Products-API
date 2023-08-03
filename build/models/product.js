@@ -48,12 +48,16 @@ class ProductStore {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, price, category } = product;
             try {
-                const sql = 'INSERT INTO products (name, price, category) VALUES ($1, $2, $3)';
+                const sql = 'INSERT INTO products (name, price, category) VALUES ($1, $2, $3) RETURNING *'; // Add "RETURNING *" to retrieve the inserted product
                 const values = [name, price, category];
-                // @ts-ignore
+                //@ts-ignore
                 const conn = yield database_1.default.connect();
                 const result = yield conn.query(sql, values);
                 conn.release();
+                // Make sure the insert operation was successful and that the product was returned
+                if (result.rows.length === 0) {
+                    throw new Error('Product not created');
+                }
                 return result.rows[0];
             }
             catch (err) {

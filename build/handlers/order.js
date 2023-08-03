@@ -23,7 +23,8 @@ const index = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(orders);
 });
 const show = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const order = yield store.show(_req.params.id);
+    const id = _req.params.id;
+    const order = yield store.show(id);
     res.json(order);
 });
 const destroyOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

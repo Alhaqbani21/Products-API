@@ -18,7 +18,8 @@ const index = async (_req: Request, res: Response) => {
 };
 
 const show = async (_req: Request, res: Response) => {
-    const order = await store.show(_req.params.id);
+    const id = _req.params.id as unknown as number;
+    const order = await store.show(id);
     res.json(order);
 };
 const destroyOrder = async (req: Request, res: Response) => {

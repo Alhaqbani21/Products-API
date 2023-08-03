@@ -51,10 +51,10 @@ class OrderStore {
             const { products, user_id, status } = order;
             try {
                 const sql = 'INSERT INTO orders (status, user_id) VALUES ($1, $2) RETURNING *';
-                // @ts-ignore
+                //@ts-ignore
                 const conn = yield database_1.default.connect();
                 const { rows } = yield conn.query(sql, [status, user_id]);
-                const newOrder = rows[0]; // Use a different variable name here to avoid conflicts
+                const newOrder = rows[0];
                 const orderProductsSql = 'INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING product_id, quantity';
                 const orderProducts = [];
                 for (const product of products) {

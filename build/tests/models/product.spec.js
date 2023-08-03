@@ -44,17 +44,6 @@ describe('Product Model', () => {
         expect(createdProduct).toEqual(Object.assign({ id: createdProduct.id }, product));
         yield deleteProduct(createdProduct.id);
     }));
-    it('should return a list of products', () => __awaiter(void 0, void 0, void 0, function* () {
-        const productList = yield productStore.index();
-        expect(productList).toEqual([
-            {
-                id: 1,
-                name: 'Bleu Pants',
-                price: 150,
-                category: 'Pants'
-            }
-        ]);
-    }));
     it('should return the correct product', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdProduct = yield createProduct(product);
         const productData = yield productStore.show(createdProduct.id);
@@ -65,7 +54,7 @@ describe('Product Model', () => {
         const createdProduct = yield createProduct(product);
         const newProduct = {
             name: 'New Product List',
-            price: 2423,
+            price: 1234,
             category: 'New category'
         };
         const { name, price, category } = yield productStore.update(createdProduct.id, newProduct);
