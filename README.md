@@ -8,12 +8,13 @@ Develop an API based on stakeholder requirements. Design the database schema, ta
 
 # To run the programm
 - make sure if you want to run the porgram in development to change ENV to dev in .env file  it is not automated 
+`npm run start`
 
 # To run the porgram in test phase 
 - make sure to change the ENV to test in .env file 
 
 
-`npm run start`
+`npm run test`
 
 # .env Variables
 
