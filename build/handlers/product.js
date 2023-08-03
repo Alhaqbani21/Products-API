@@ -24,32 +24,45 @@ const index = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(products);
 });
 const show = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productId = parseInt(_req.params.id);
-    const product = yield store.show(productId);
-    res.json(product);
+    try {
+        const id = _req.params.id;
+        if (!id) {
+            res.status(400);
+            res.send('Missing id !! ');
+            return false;
+        }
+        const product = yield store.show(id);
+        if (!product) {
+            res.status(404);
+            res.send('Product not found');
+            return;
+        }
+        res.json(product);
+    }
+    catch (err) {
+        res.status(400).json(err);
+    }
 });
 const deleteProduct = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productId = _req.params.id;
-    if (!productId) {
+    const id = _req.params.id;
+    if (!id) {
         res.status(400);
         res.send('ID is missed');
         return false;
     }
-    yield store.deleteProduct(productId);
-    res.send(`Product id: ${productId} was deleted successfully.`);
+    yield store.deleteProduct(id);
+    res.send(`Product id: ${id} was deleted successfully.`);
 });
 const createProduct = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const product = {
-        name: _req.body.name,
-        price: _req.body.price,
-        category: _req.body.category
-    };
-    if (!product.name || !product.price || !product.category) {
+    const name = _req.body.name;
+    const price = _req.body.price;
+    const category = _req.body.name;
+    if (!name || !price || !category) {
         res.status(400);
         res.send('Some information are missed');
         return false;
     }
-    yield store.addProduct(product);
+    const product = yield store.addProduct({ name, price, category });
     res.json({ product });
 });
 const updateProduct = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,12 +70,23 @@ const updateProduct = (_req, res) => __awaiter(void 0, void 0, void 0, function*
         const id = _req.params.id;
         const name = _req.body.name;
         const price = _req.body.price;
-        if (!name || !price || !id) {
+        const category = _req.body.category;
+        if (!name || !price || !id || !category) {
             res.status(400);
-            res.send('Some parameters are required ');
-            return false;
+            res.send('Some parameters are required');
+            return;
         }
-        const product = yield store.update(id, name, price);
+        const product = yield store.update(id, {
+            name,
+            price,
+            category
+        });
+        if (!product) {
+            res.status(404);
+            res.send('Product not found');
+            return;
+        }
+        res.json(product);
     }
     catch (err) {
         res.status(400).json(err);

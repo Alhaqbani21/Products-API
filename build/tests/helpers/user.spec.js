@@ -17,7 +17,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const server_1 = __importDefault(require("../../server"));
 const request = (0, supertest_1.default)(server_1.default);
 const SECRET = process.env.TOKEN_SECRET;
-describe('User Handler', () => {
+describe('User Handler spec', () => {
     const userData = {
         username: 'X3zZ',
         firstname: 'Abdulaziz',
@@ -25,7 +25,7 @@ describe('User Handler', () => {
         password: '123'
     };
     let token, userId = 1;
-    it('should gets the create endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked create Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request.post('/users/create').send(userData);
         const { body, status } = res;
         token = body;
@@ -34,32 +34,28 @@ describe('User Handler', () => {
         const { user } = jsonwebtoken_1.default.verify(token, SECRET);
         userId = user.id;
         expect(status).toBe(200);
-        done();
     }));
-    it('should gets the index endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked index Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .get('/users')
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     }));
-    it('should get the read endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked read Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .get(`/users/${userId}`)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     }));
-    it('should get the update endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked update Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const newUserData = Object.assign(Object.assign({}, userData), { firstname: 'Ahmed', lastname: 'Saad' });
         const res = yield request
             .put(`/users/${userId}`)
             .send(newUserData)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     }));
-    it('should get the auth endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked authenticate Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .post('/users/authenticate')
             .send({
@@ -68,25 +64,22 @@ describe('User Handler', () => {
         })
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     }));
-    it('should get the auth endpoint with wrong password', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked wrong data authenticate Endpiont', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .post('/users/authenticate')
             .send({
             username: userData.username,
-            password: 'trtdtxcfcf'
+            password: '1234531w'
         })
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(401);
-        done();
     }));
-    it('should get the delete endpoint', (done) => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked delete Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .delete(`/users/${userId}`)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     }));
 });
 //# sourceMappingURL=user.spec.js.map

@@ -13,7 +13,6 @@ const {
 } = process.env;
 
 let client;
-console.log('ENV= ' + ENV);
 
 if ((ENV as string) === 'test') {
     client = new Pool({
@@ -22,6 +21,7 @@ if ((ENV as string) === 'test') {
         user: POSTGRES_USER,
         password: POSTGRES_PASSWORD
     });
+    console.log('ENV= ' + ENV);
 } else if ((ENV as string) === 'dev') {
     client = new Pool({
         host: POSTGRES_HOST,
@@ -29,6 +29,7 @@ if ((ENV as string) === 'test') {
         user: POSTGRES_USER,
         password: POSTGRES_PASSWORD
     });
+    console.log('ENV= ' + ENV);
 } else {
     console.log('ENV is not dev or test, ENV= ' + ENV);
 }

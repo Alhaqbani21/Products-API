@@ -7,7 +7,7 @@ import app from '../../server';
 const request = supertest(app);
 const SECRET = process.env.TOKEN_SECRET as Secret;
 
-describe('User Handler', () => {
+describe('User Handler spec', () => {
     const userData: BaseAuthUser = {
         username: 'X3zZ',
         firstname: 'Abdulaziz',
@@ -18,7 +18,7 @@ describe('User Handler', () => {
     let token: string,
         userId = 1;
 
-    it('should gets the create endpoint', async (done) => {
+    it('Checked create Endpoint', async () => {
         const res = await request.post('/users/create').send(userData);
 
         const { body, status } = res;
@@ -30,28 +30,23 @@ describe('User Handler', () => {
         userId = user.id;
 
         expect(status).toBe(200);
-        done();
     });
 
-    it('should gets the index endpoint', async (done) => {
+    it('Checked index Endpoint', async () => {
         const res = await request
             .get('/users')
             .set('Authorization', 'bearer ' + token);
-
         expect(res.status).toBe(200);
-        done();
     });
 
-    it('should get the read endpoint', async (done) => {
+    it('Checked read Endpoint', async () => {
         const res = await request
             .get(`/users/${userId}`)
             .set('Authorization', 'bearer ' + token);
-
         expect(res.status).toBe(200);
-        done();
     });
 
-    it('should get the update endpoint', async (done) => {
+    it('Checked update Endpoint', async () => {
         const newUserData: BaseAuthUser = {
             ...userData,
             firstname: 'Ahmed',
@@ -62,12 +57,10 @@ describe('User Handler', () => {
             .put(`/users/${userId}`)
             .send(newUserData)
             .set('Authorization', 'bearer ' + token);
-
         expect(res.status).toBe(200);
-        done();
     });
 
-    it('should get the auth endpoint', async (done) => {
+    it('Checked authenticate Endpoint', async () => {
         const res = await request
             .post('/users/authenticate')
             .send({
@@ -75,29 +68,24 @@ describe('User Handler', () => {
                 password: userData.password
             })
             .set('Authorization', 'bearer ' + token);
-
         expect(res.status).toBe(200);
-        done();
     });
 
-    it('should get the auth endpoint with wrong password', async (done) => {
+    it('Checked wrong data authenticate Endpiont', async () => {
         const res = await request
             .post('/users/authenticate')
             .send({
                 username: userData.username,
-                password: 'trtdtxcfcf'
+                password: '1234531w'
             })
             .set('Authorization', 'bearer ' + token);
-
         expect(res.status).toBe(401);
-        done();
     });
 
-    it('should get the delete endpoint', async (done) => {
+    it('Checked delete Endpoint', async () => {
         const res = await request
             .delete(`/users/${userId}`)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
-        done();
     });
 });

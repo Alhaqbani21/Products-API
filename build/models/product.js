@@ -46,11 +46,14 @@ class ProductStore {
     }
     addProduct(product) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { name, price, category } = product;
             try {
                 const sql = 'INSERT INTO products (name, price, category) VALUES ($1, $2, $3)';
-                const values = [product.name, product.price, product.category];
+                const values = [name, price, category];
                 // @ts-ignore
-                const result = yield database_1.default.query(sql, values);
+                const conn = yield database_1.default.connect();
+                const result = yield conn.query(sql, values);
+                conn.release();
                 return result.rows[0];
             }
             catch (err) {
@@ -58,27 +61,36 @@ class ProductStore {
             }
         });
     }
-    deleteProduct(productId) {
+    deleteProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const sql = 'DELETE FROM products WHERE id = $1';
                 // @ts-ignore
-                yield database_1.default.query(sql, [productId]);
+                const conn = yield database_1.default.connect();
+                const result = yield conn.query(sql, [id]);
+                conn.release();
+                return result.rows[0];
             }
             catch (err) {
-                throw new Error(`Unable to delete product with ID ${productId}: ${err}`);
+                throw new Error(`Unable to delete product with ID ${id}: ${err}`);
             }
         });
     }
-    update(id, newName, price) {
+    update(id, productData) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { name: newName, price, category } = productData;
             try {
-                const sql = 'UPDATE products SET name = $1, price = $2 WHERE id = $3 RETURNING *';
+                const sql = 'UPDATE products SET name = $1, price = $2, category = $3 WHERE id = $4 RETURNING *';
                 // @ts-ignore
                 const conn = yield database_1.default.connect();
-                const { rows } = yield conn.query(sql, [newName, price, id]);
+                const result = yield conn.query(sql, [
+                    newName,
+                    price,
+                    category,
+                    id
+                ]);
                 conn.release();
-                return rows[0];
+                return result.rows[0];
             }
             catch (err) {
                 throw new Error(`Could not update product ${newName}. ${err}`);

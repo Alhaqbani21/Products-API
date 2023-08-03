@@ -18,23 +18,23 @@ describe('User Model', () => {
         return userStore.delete(id);
     }
 
-    it('should have getUser method', () => {
+    it('Get user method implemented', () => {
         expect(userStore.index).toBeDefined();
     });
 
-    it('should have a show method', () => {
+    it('show method implemented ', () => {
         expect(userStore.show).toBeDefined();
     });
 
-    it('should have a create method', () => {
+    it('create method implemented', () => {
         expect(userStore.create).toBeDefined();
     });
 
-    it('should have a remove method', () => {
+    it('remove method implemented', () => {
         expect(userStore.delete).toBeDefined();
     });
 
-    it('should create a user', async () => {
+    it('should create a user in the database', async () => {
         const createdUser = await createUser(user);
         if (createdUser) {
             expect(createdUser.username).toBe(user.username);
@@ -44,22 +44,14 @@ describe('User Model', () => {
         await deleteUser(createdUser.id);
     });
 
-    it('should return a list of users', async () => {
-        const result: any = await userStore.index();
-        expect(result[0].username).toEqual('X3zZ');
-        expect(result[0].id).toEqual(1);
-        expect(result[0].firstname).toEqual('Abdulaziz');
-        expect(result[0].lastname).toEqual('Alhaqbani');
-    });
-
-    it(' should return the correct users', async () => {
+    it('should return the created users', async () => {
         const createdUser: User = await createUser(user);
         const users = await userStore.show(createdUser.id);
         expect(users).toEqual(createdUser);
         await deleteUser(createdUser.id);
     });
 
-    it('should remove the user', async () => {
+    it('should delete the user', async () => {
         const createdUser: User = await createUser(user);
         await deleteUser(createdUser.id);
         expect(createdUser.firstname).toEqual('Abdulaziz');

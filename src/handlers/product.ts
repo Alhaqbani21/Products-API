@@ -19,35 +19,48 @@ const index = async (_req: Request, res: Response) => {
 };
 
 const show = async (_req: Request, res: Response) => {
-    const productId = parseInt(_req.params.id);
-    const product = await store.show(productId);
-    res.json(product);
+    try {
+        const id = _req.params.id as unknown as number;
+
+        if (!id) {
+            res.status(400);
+            res.send('Missing id !! ');
+            return false;
+        }
+
+        const product: Product | null = await store.show(id);
+        if (!product) {
+            res.status(404);
+            res.send('Product not found');
+            return;
+        }
+        res.json(product);
+    } catch (err) {
+        res.status(400).json(err);
+    }
 };
 
 const deleteProduct = async (_req: Request, res: Response) => {
-    const productId = _req.params.id as unknown as number;
-    if (!productId) {
+    const id = _req.params.id as unknown as number;
+    if (!id) {
         res.status(400);
         res.send('ID is missed');
         return false;
     }
-    await store.deleteProduct(productId);
-    res.send(`Product id: ${productId} was deleted successfully.`);
+    await store.deleteProduct(id);
+    res.send(`Product id: ${id} was deleted successfully.`);
 };
 
 const createProduct = async (_req: Request, res: Response) => {
-    const product: Product = {
-        name: _req.body.name,
-        price: _req.body.price,
-        category: _req.body.category
-    };
-
-    if (!product.name || !product.price || !product.category) {
+    const name = _req.body.name as unknown as string;
+    const price = _req.body.price as unknown as number;
+    const category = _req.body.name as unknown as string;
+    if (!name || !price || !category) {
         res.status(400);
         res.send('Some information are missed');
         return false;
     }
-    await store.addProduct(product);
+    const product: Product = await store.addProduct({ name, price, category });
     res.json({ product });
 };
 
@@ -56,12 +69,27 @@ const updateProduct = async (_req: Request, res: Response) => {
         const id = _req.params.id as unknown as number;
         const name = _req.body.name as unknown as string;
         const price = _req.body.price as unknown as number;
-        if (!name || !price || !id) {
+        const category = _req.body.category as unknown as string;
+
+        if (!name || !price || !id || !category) {
             res.status(400);
-            res.send('Some parameters are required ');
-            return false;
+            res.send('Some parameters are required');
+            return;
         }
-        const product: Product = await store.update(id, name, price);
+
+        const product: Product = await store.update(id, {
+            name,
+            price,
+            category
+        });
+
+        if (!product) {
+            res.status(404);
+            res.send('Product not found');
+            return;
+        }
+
+        res.json(product);
     } catch (err) {
         res.status(400).json(err);
     }

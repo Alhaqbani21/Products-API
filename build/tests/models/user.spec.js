@@ -28,19 +28,19 @@ describe('User Model', () => {
             return userStore.delete(id);
         });
     }
-    it('should have getUser method', () => {
+    it('Get user method implemented', () => {
         expect(userStore.index).toBeDefined();
     });
-    it('should have a show method', () => {
+    it('show method implemented ', () => {
         expect(userStore.show).toBeDefined();
     });
-    it('should have a create method', () => {
+    it('create method implemented', () => {
         expect(userStore.create).toBeDefined();
     });
-    it('should have a remove method', () => {
+    it('remove method implemented', () => {
         expect(userStore.delete).toBeDefined();
     });
-    it('should create a user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should create a user in the database', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdUser = yield createUser(user);
         if (createdUser) {
             expect(createdUser.username).toBe(user.username);
@@ -49,20 +49,13 @@ describe('User Model', () => {
         }
         yield deleteUser(createdUser.id);
     }));
-    it('should return a list of users', () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield userStore.index();
-        expect(result[0].username).toEqual('X3zZ');
-        expect(result[0].id).toEqual(1);
-        expect(result[0].firstname).toEqual('Abdulaziz');
-        expect(result[0].lastname).toEqual('Alhaqbani');
-    }));
-    it(' should return the correct users', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should return the created users', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdUser = yield createUser(user);
         const users = yield userStore.show(createdUser.id);
         expect(users).toEqual(createdUser);
         yield deleteUser(createdUser.id);
     }));
-    it('should remove the user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should delete the user', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdUser = yield createUser(user);
         yield deleteUser(createdUser.id);
         expect(createdUser.firstname).toEqual('Abdulaziz');

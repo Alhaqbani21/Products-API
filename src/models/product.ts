@@ -1,12 +1,14 @@
 // @ts-ignore
 import Client from '../database';
 
-export type Product = {
-    id?: number;
+export interface BaseProduct {
     name: string;
     price: number;
     category: string;
-};
+}
+export interface Product extends BaseProduct {
+    id: number;
+}
 
 export class ProductStore {
     async index(): Promise<Product[]> {
@@ -36,39 +38,51 @@ export class ProductStore {
         }
     }
 
-    async addProduct(product: Product): Promise<Product> {
+    async addProduct(product: BaseProduct): Promise<Product> {
+        const { name, price, category } = product;
         try {
             const sql =
                 'INSERT INTO products (name, price, category) VALUES ($1, $2, $3)';
-            const values = [product.name, product.price, product.category];
+            const values = [name, price, category];
             // @ts-ignore
-            const result = await Client.query(sql, values);
+            const conn = await Client.connect();
+
+            const result = await conn.query(sql, values);
+            conn.release();
             return result.rows[0];
         } catch (err) {
             throw new Error(`Unable to add product: ${err}`);
         }
     }
 
-    async deleteProduct(productId: number): Promise<void> {
+    async deleteProduct(id: number): Promise<void> {
         try {
             const sql = 'DELETE FROM products WHERE id = $1';
             // @ts-ignore
-            await Client.query(sql, [productId]);
+            const conn = await Client.connect();
+            const result = await conn.query(sql, [id]);
+            conn.release();
+            return result.rows[0];
         } catch (err) {
-            throw new Error(
-                `Unable to delete product with ID ${productId}: ${err}`
-            );
+            throw new Error(`Unable to delete product with ID ${id}: ${err}`);
         }
     }
-    async update(id: number, newName: string, price: number): Promise<Product> {
+    async update(id: number, productData: BaseProduct): Promise<Product> {
+        const { name: newName, price, category } = productData;
         try {
             const sql =
-                'UPDATE products SET name = $1, price = $2 WHERE id = $3 RETURNING *';
+                'UPDATE products SET name = $1, price = $2, category = $3 WHERE id = $4 RETURNING *';
             // @ts-ignore
             const conn = await Client.connect();
-            const { rows } = await conn.query(sql, [newName, price, id]);
+            const result = await conn.query(sql, [
+                newName,
+                price,
+                category,
+                id
+            ]);
+
             conn.release();
-            return rows[0];
+            return result.rows[0];
         } catch (err) {
             throw new Error(`Could not update product ${newName}. ${err}`);
         }
