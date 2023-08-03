@@ -6,7 +6,7 @@ Develop an API based on stakeholder requirements. Design the database schema, ta
 
 `npm install`
 
-# To run the programm
+# To run the program
 - make sure if you want to run the porgram in development to change ENV to dev in .env file  it is not automated 
 `npm run start`
 
