@@ -7,26 +7,27 @@ Develop an API based on stakeholder requirements. Design the database schema, ta
 `npm install`
 
 # To run the program
-- make sure if you want to run the porgram in development to change ENV to dev in .env file  it is not automated 
-`npm run start`
 
-# To run the porgram in test phase 
-- make sure to change the ENV to test in .env file 
+-   make sure if you want to run the porgram in development to change ENV to dev in .env file it is not automated
+    `npm run start`
 
+# To run the porgram in test phase
+
+-   make sure to change the ENV to test in .env file
 
 `npm run test`
 
 # .env Variables
 
-- POSTGRES_HOST=127.0.0.1
-- POSTGRES_DB=store_front
-- POSTGRES_TEST_DB=store_front_test
-- POSTGRES_USER=
-- POSTGRES_PASSWORD=
-- ENV=dev
-- SALT_ROUNDS=10
-- BCRYPT_PASSWORD=exodus-fencing-huskiness
-- TOKEN_SECRET=diffused
+-   POSTGRES_HOST=127.0.0.1
+-   POSTGRES_DB=store_front
+-   POSTGRES_TEST_DB=store_front_test
+-   POSTGRES_USER=
+-   POSTGRES_PASSWORD=
+-   ENV=dev
+-   SALT_ROUNDS=10
+-   BCRYPT_PASSWORD=exodus-fencing-huskiness
+-   TOKEN_SECRET=diffused
 
 # ports
 
@@ -39,8 +40,12 @@ Authentication tokens are sent within the HTTP header.
 
 `Authorization   Bearer <token>`
 
-
-
 # API Endpoints
 
 API Endpoints are mentioned in REQUIREMENTS.md
+
+# Create Databases
+
+we have to create the dev and test database.
+
+connect to the database as the server's root user `psql -U postgres`
