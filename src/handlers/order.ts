@@ -4,7 +4,7 @@ import { Order, OrderStore, OrderProduct } from '../models/order';
 import { verifyUser } from './verify';
 
 const orderRoutes = (app: express.Application) => {
-    app.get('/orders', index);
+    app.get('/orders', verifyUser, index);
     app.get('/orders/:id', verifyUser, show);
     app.post('/orders/create', verifyUser, create);
     app.delete('/orders/:id', verifyUser, destroyOrder);
@@ -13,14 +13,22 @@ const orderRoutes = (app: express.Application) => {
 const store = new OrderStore();
 
 const index = async (_req: Request, res: Response) => {
-    const orders = await store.index();
-    res.json(orders);
+    try {
+        const orders = await store.index();
+        res.json(orders);
+    } catch (err) {
+        res.status(400).json(err);
+    }
 };
 
 const show = async (_req: Request, res: Response) => {
-    const id = _req.params.id as unknown as number;
-    const order = await store.show(id);
-    res.json(order);
+    try {
+        const id = _req.params.id as unknown as number;
+        const order = await store.show(id);
+        res.json(order);
+    } catch (err) {
+        res.status(400).json(err);
+    }
 };
 const destroyOrder = async (req: Request, res: Response) => {
     try {

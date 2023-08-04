@@ -47,7 +47,7 @@ describe('Order Handler', () => {
         }) // Explicitly cast the return value to Order type
         );
     }));
-    it('should create order endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked create order Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .post('/orders/create')
             .set('Authorization', 'Bearer ' + token)
@@ -75,19 +75,19 @@ describe('Order Handler', () => {
             status: 'active'
         });
     }));
-    it('gets the index endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked index Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .get('/orders')
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
     }));
-    it('should gets the read endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked show Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .get(`/orders/1`)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
     }));
-    it('should gets the delete endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked delete Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .delete(`/orders/2`)
             .set('Authorization', 'bearer ' + token);

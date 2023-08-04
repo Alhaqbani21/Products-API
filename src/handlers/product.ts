@@ -14,8 +14,12 @@ const productRoutes = (app: express.Application) => {
 const store = new ProductStore();
 
 const index = async (_req: Request, res: Response) => {
-    const products = await store.index();
-    res.json(products);
+    try {
+        const products = await store.index();
+        res.json(products);
+    } catch (err) {
+        res.status(400).json(err);
+    }
 };
 
 const show = async (_req: Request, res: Response) => {
@@ -42,26 +46,39 @@ const show = async (_req: Request, res: Response) => {
 
 const deleteProduct = async (_req: Request, res: Response) => {
     const id = _req.params.id as unknown as number;
-    if (!id) {
-        res.status(400);
-        res.send('ID is missed');
-        return false;
+
+    try {
+        if (!id) {
+            res.status(400);
+            res.send('ID is missed');
+            return false;
+        }
+        await store.deleteProduct(id);
+        res.send(`Product id: ${id} was deleted successfully.`);
+    } catch (err) {
+        res.status(400).json(err);
     }
-    await store.deleteProduct(id);
-    res.send(`Product id: ${id} was deleted successfully.`);
 };
 
 const createProduct = async (_req: Request, res: Response) => {
     const name = _req.body.name as unknown as string;
     const price = _req.body.price as unknown as number;
     const category = _req.body.name as unknown as string;
-    if (!name || !price || !category) {
-        res.status(400);
-        res.send('Some information are missed');
-        return false;
+    try {
+        if (!name || !price || !category) {
+            res.status(400);
+            res.send('Some information are missed');
+            return false;
+        }
+        const product: Product = await store.addProduct({
+            name,
+            price,
+            category
+        });
+        res.json({ product });
+    } catch (err) {
+        res.status(400).json(err);
     }
-    const product: Product = await store.addProduct({ name, price, category });
-    res.json({ product });
 };
 
 const updateProduct = async (_req: Request, res: Response) => {

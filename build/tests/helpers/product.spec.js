@@ -43,22 +43,22 @@ describe('Product Handler', () => {
             .delete(`/users/${userId}`)
             .set('Authorization', 'bearer ' + token);
     }));
-    it('gets the create endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked create Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .post('/products/create')
             .send(product)
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
     }));
-    it('gets the index endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked index Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request.get('/products');
         expect(res.status).toBe(200);
     }));
-    it('gets the read endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked show Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request.get(`/products/1`);
         expect(res.status).toBe(200);
     }));
-    it('gets the update endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked update Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const newProductData = Object.assign(Object.assign({}, product), { name: 'Blue Pants', price: 150, category: 'Pants' });
         const res = yield request
             .put(`/products/1`)
@@ -66,7 +66,7 @@ describe('Product Handler', () => {
             .set('Authorization', 'bearer ' + token);
         expect(res.status).toBe(200);
     }));
-    it('gets the delete endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('Checked delete Endpoint', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield request
             .delete(`/products/1`)
             .set('Authorization', 'bearer ' + token);

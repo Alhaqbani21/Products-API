@@ -27,16 +27,16 @@ describe('Product Model', () => {
             return productStore.deleteProduct(id);
         });
     }
-    it('should have an index method', () => {
+    it('Get index method implemented', () => {
         expect(productStore.index).toBeDefined();
     });
-    it('should have a show method', () => {
+    it('Get show method implemented', () => {
         expect(productStore.show).toBeDefined();
     });
-    it('should have a add method', () => {
+    it('Get add method implemented', () => {
         expect(productStore.addProduct).toBeDefined();
     });
-    it('should have a delete method', () => {
+    it('Get delete method implemented', () => {
         expect(productStore.deleteProduct).toBeDefined();
     });
     it('should add a product', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,7 +44,7 @@ describe('Product Model', () => {
         expect(createdProduct).toEqual(Object.assign({ id: createdProduct.id }, product));
         yield deleteProduct(createdProduct.id);
     }));
-    it('should return the correct product', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should return the product', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdProduct = yield createProduct(product);
         const productData = yield productStore.show(createdProduct.id);
         expect(productData).toEqual(createdProduct);

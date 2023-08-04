@@ -52,19 +52,19 @@ describe('Order Model', () => {
         yield userStore.delete(user_id);
         yield productStore.deleteProduct(product_id);
     }));
-    it('should have an index method', () => {
+    it('Get index method implemented', () => {
         expect(orderStore.index).toBeDefined();
     });
-    it('should have a show method', () => {
+    it('Get show method implemented', () => {
         expect(orderStore.show).toBeDefined();
     });
-    it('should have a add method', () => {
+    it('Get add method implemented', () => {
         expect(orderStore.create).toBeDefined();
     });
-    it('should have a delete method', () => {
+    it('Get delete method implemented', () => {
         expect(orderStore.destroyOrder).toBeDefined();
     });
-    it('should add an order', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('order should be added ', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdOrder = yield createOrder(order);
         expect(parseInt(createdOrder.user_id)).toEqual(user_id);
         expect(parseInt(createdOrder.products[0].product_id)).toEqual(product_id);
@@ -75,7 +75,7 @@ describe('Order Model', () => {
             fail('Invalid order id');
         }
     }));
-    it('should remove the order item', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('order item should be removed ', () => __awaiter(void 0, void 0, void 0, function* () {
         const createdOrder = yield createOrder(order);
         if (createdOrder.id) {
             yield deleteOrder(createdOrder.id);
